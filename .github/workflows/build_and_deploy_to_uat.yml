@@ -33,7 +33,7 @@ on:
 
 env:
   AWS_REGION: us-east-1                           # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: desaisiv-pdf-ocr-lambda-uat     # set this to your Amazon ECR repository name
+  ECR_REPOSITORY: desaisiv-ce-data-extractor-uat     # set this to your Amazon ECR repository name
 
 permissions:
   contents: read
@@ -108,7 +108,7 @@ jobs:
       id: update-lambda-function-code
       env:
         IMAGE_TAG: latest
-        LAMBDA_URL: 983376079397.dkr.ecr.us-east-1.amazonaws.com/desaisiv-pdf-ocr-lambda-uat
+        LAMBDA_URL: 983376079397.dkr.ecr.us-east-1.amazonaws.com/desaisiv-ce-data-extractor-uat
 
       run: |
-        aws lambda update-function-code --function-name desaisiv-pdf-ocr-lambda-uat --image-uri $LAMBDA_URL:$IMAGE_TAG
+        aws lambda update-function-code --function-name desaisiv-ce-data-extractor-uat --image-uri $LAMBDA_URL:$IMAGE_TAG

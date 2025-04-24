@@ -1,0 +1,29 @@
+pandas==2.2.3
+boto3==1.35.92
+numpy==2.0.2
+pdfplumber==0.11.5
+requests==2.32.3
+urllib3==2.3.0
+# opencv-python-headless.66
+PyYAML==6.0.2
+openpyxl==3.1.5
+pyxlsb==1.0.10
+unittest2==1.1.0
+xlrd==2.0.1
+cryptography==44.0.0
+amazon-textract-response-parser==1.0.3
+odfpy==1.4.1
+pycountry==24.6.1
+thefuzz==0.22.1
+img2table==1.4.0
+img2table[aws]
+pdf2image==1.17.0
+argparse 
+# polars 
+# pyarrow1
+python-dotenv==1.0.1
+redis==5.2.1
+python-bidi==0.6.3
+azure-ai-formrecognizer==3.3.3
+amazon-textract-textractor==1.8.5
+pillow==11.1.0

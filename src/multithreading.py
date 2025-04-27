@@ -4,8 +4,8 @@ import time
 import json
 import boto3
 from .logger import logging
-from brokercecore.utils.missing_classes_utils import transform_dataframe_class
-from .validation_extractor import ValidationExtractor
+# from brokercecore.utils.missing_classes_utils import transform_dataframe_class
+# from .validation_extractor import ValidationExtractor
 
 
 class MultiThreading:
@@ -177,7 +177,7 @@ class MultiThreading:
         self.retrieve_data_per_file()
         general_missing_classes = {}
         
-        validation_extractor_instance = ValidationExtractor()
+        validation_extractor_instance = ""#ValidationExtractor()
         
         company_duplicates = {'English':[],'Arabic':[]}
         for company, data in self.data_per_company.items():
@@ -206,7 +206,8 @@ class MultiThreading:
                     claims_df_offer, benefits_df_offer, providers_df_offer = validation_extractor_instance.clean_class(claims_df.copy(),benefits_df.copy(),providers_df.copy())
                     missing_metadata_offer = {}#validation_extractor_instance.return_missing_metadata_dict(claims_df_offer)
                 claims_df, benefits_df, providers_df, table_of_benefits,missing_metadata = validation_extractor_instance.process(claims_df, benefits_df, providers_df,table_of_benefits)
-                claims_df, benefits_df, providers_df, missing_classes = transform_dataframe_class(claims_df, benefits_df, providers_df, active_list)
+                # claims_df, benefits_df, providers_df, missing_classes = transform_dataframe_class(claims_df, benefits_df, providers_df, active_list)
+                claims_df, benefits_df, providers_df, missing_classes = ""#transform_dataframe_class(claims_df, benefits_df, providers_df, active_list)
             else:
                 claims_df, benefits_df, providers_df = validation_extractor_instance.clean_class(claims_df, benefits_df, providers_df)
                 # Empty dictionary means we won't trigger missing information for underwriter 

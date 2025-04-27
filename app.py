@@ -47,8 +47,12 @@ def lambda_handler(event, context):
     print(f"Detected Environment: {env}")
     print(f"Event: {event}")
     start = time.time()
+    config = load_config(CONFIG_PATH)
 
-    bucket, file_key = fetch_bucket_user_id_report_id(event)
+    bucket, file_key = fetch_bucket_user_id_report_id(
+        event=event,
+        sqs_url=config['sqs_url']
+    )
 
     print(bucket, file_key)
 
@@ -83,6 +87,7 @@ def fetch_bucket_user_id_report_id(event: dict, sqs_url: str):
                 QueueUrl=sqs_url,
                 ReceiptHandle=receipt_handle
             )
+            print("Deleted SQS Message")
     except Exception as e:
         print(f"Failed to delete sqs event error: {str(e)}")
 

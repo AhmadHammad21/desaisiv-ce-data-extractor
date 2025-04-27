@@ -24,7 +24,6 @@ from dotenv import load_dotenv
 from src.multithreading import MultiThreading
 
 
-GS_KEY = "*De$@IA$iV*Crypt0*C0d3*"
 DEFAULT_ENV = "dev"
 env = os.getenv('APP_ENV', DEFAULT_ENV)
 cfg = botocore.config.Config(retries={'max_attempts': 0}, read_timeout=840, connect_timeout=600, region_name="us-east-1")
@@ -43,23 +42,6 @@ def load_config(config_path):
         raise Exception("Issue in loading the configuration file")
 
     return config
-
-def get_gs_key():
-    return GS_KEY
-
-def encrypt_input(input_string):
-    gs_key = hashlib.md5(get_gs_key().encode('utf-8')).digest()
-    input_bytes = input_string.encode('ascii')
-    input_base64 = base64.b64encode(input_bytes).decode('ascii')
-
-    padder = padding.PKCS7(8 * 8).padder()
-    padded_data = padder.update(input_base64.encode('utf-8')) + padder.finalize()
-
-    cipher = Cipher(algorithms.TripleDES(gs_key), modes.ECB(), backend=default_backend())
-    encryptor = cipher.encryptor()
-    encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
-
-    return base64.b64encode(encrypted_data).decode('ascii')
 
 def lambda_handler(event, context):
     print(f"Detected Environment: {env}")

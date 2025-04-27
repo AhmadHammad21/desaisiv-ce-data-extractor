@@ -81,25 +81,15 @@ def lambda_handler(event, context):
 def fetch_bucket_user_id_report_id(event: list):
     # Extract the records from the event
     records = event.get('Records', [])
-    print(records)
 
     config_file = load_config(CONFIG_PATH)
     # files_testing_buckets = config_file.get('files_testing', '')
     # temp_file_bucket = config_file.get('temp_file_s3_bucket', '')
 
-    # determining if the event comes from s3 or sns
     for record in records:
-        if "Sqs" in record.keys():
-            body = json.loads(record['body'])
-            user_id = body['user_id']
-            report_id = body['report_id']
-            file_key = body['file_key']
-            bucket = body['bucket']
+        body = json.loads(record['body'])
+        
+        file_key = body.get('file_key')
+        bucket = body.get('bucket')
 
-            return bucket, user_id, report_id, file_key
-        else:
-            raise KeyError("Event Source not found, expected `Sqs` events")
-
-    return bucket, file_key
-
-
+        return bucket, file_key

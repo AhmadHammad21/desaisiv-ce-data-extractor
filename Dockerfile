@@ -14,9 +14,6 @@ RUN dnf install -y poppler-utils
 RUN dnf install poppler-data
 RUN dnf install fontconfig
 
-COPY my_fonts/ /usr/share/fonts/my_fonts/
-RUN fc-cache -fv
-
 RUN mkdir ~/.aws
 RUN mv credentials ~/.aws/credentials
 

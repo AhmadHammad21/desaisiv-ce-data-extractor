@@ -60,18 +60,31 @@ def lambda_handler(event, context):
     }
 
 
-def fetch_bucket_user_id_report_id(event: list):
+def fetch_bucket_user_id_report_id(event: dict, sqs_url: str):
     # Extract the records from the event
     records = event.get('Records', [])
 
-    config_file = load_config(CONFIG_PATH)
-    # files_testing_buckets = config_file.get('files_testing', '')
-    # temp_file_bucket = config_file.get('temp_file_s3_bucket', '')
+    if not records:
+        return None, None  # Handle case where there are no records
 
-    for record in records:
-        body = json.loads(record['body'])
-        
-        file_key = body.get('file_key')
-        bucket = body.get('bucket')
 
-        return bucket, file_key
+    record = records[0]
+    
+    receipt_handle = record.get('receiptHandle', '')
+    body = json.loads(record['body'])
+    
+    bucket = body.get('bucket')
+    file_key = body.get('file_key')
+
+    # Delete the message after processing
+    try:
+        if receipt_handle:
+            sqs.delete_message(
+                QueueUrl=sqs_url,
+                ReceiptHandle=receipt_handle
+            )
+    except Exception as e:
+        print(f"Failed to delete sqs event error: {str(e)}")
+
+    return bucket, file_key
+

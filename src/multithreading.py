@@ -4,15 +4,13 @@ import time
 import json
 import boto3
 from .logger import logging
-# from brokercecore.utils.missing_classes_utils import transform_dataframe_class
-# from .validation_extractor import ValidationExtractor
 
 
 class MultiThreading:
     def __init__(self, redis_client, user_id: str, report_id: str,
-                 redis_key, config, pricing_offer, claim_experience_files,
-                 final_data, active_list, english_companies_names,
-                 arabic_companies_names, english_arabic_companies_dict) -> None:
+                 redis_key: str, config: dict, claim_experience_files: dict,
+                 final_data: dict, english_companies_names: dict,
+                 arabic_companies_names: dict, english_arabic_companies_dict: dict):
         self.redis_client = redis_client
         self.user_id = user_id
         self.report_id = report_id
@@ -22,10 +20,8 @@ class MultiThreading:
         self.sleep_time_while = 0.5  # seconds
         self.files_count = 0
         self.data_per_company = {}
-        self.pricing_offer = pricing_offer
         self.claim_experience_files = claim_experience_files
         self.final_data = final_data
-        self.active_list = active_list
         self.english_companies_names = english_companies_names
         self.arabic_companies_names = arabic_companies_names
         self.english_arabic_companies_dict = english_arabic_companies_dict
@@ -57,8 +53,7 @@ class MultiThreading:
 
         self.while_loop()
 
-        final_data, general_missing_classes = self.aggregate_processes_data(self.final_data,
-                                                                            self.active_list)
+        final_data = self.aggregate_processes_data(self.final_data)
 
         self.remove_redis_key(self.redis_key)
 
@@ -66,7 +61,7 @@ class MultiThreading:
 
         self.remove_s3_temp_files()
 
-        return final_data, general_missing_classes, self.files_data, self.company_notes, self.duplicate_notes
+        return final_data, self.files_data, self.company_notes, self.duplicate_notes
 
     def set_redis_key(self) -> None:
         """Initialize redis key"""
@@ -173,12 +168,9 @@ class MultiThreading:
 
         logging.info("Finished retrieve_data_per_file method")
         
-    def aggregate_processes_data(self, final_data, active_list):
+    def aggregate_processes_data(self, final_data):
         self.retrieve_data_per_file()
-        general_missing_classes = {}
-        
-        validation_extractor_instance = ""#ValidationExtractor()
-        
+                
         company_duplicates = {'English':[],'Arabic':[]}
         for company, data in self.data_per_company.items():
             claims_df = pd.concat(data['claims']).reset_index(drop=True)
@@ -187,45 +179,11 @@ class MultiThreading:
             table_of_benefits = data['table_of_benefits']
             metadata = data['metadata']
             
-            # remove duplicates
-            claims_df, benefits_df, providers_df, company_duplicates = validation_extractor_instance.remove_ce_duplicates(claims_df, benefits_df,
-                                                                                                                  providers_df, company_duplicates,
-                                                                                                                  self.english_companies_names[int(company)],
-                                                                                                                  self.arabic_companies_names[int(company)]) 
-
-            # original flow
-            # we added this condition to make sure that original flow works
-            # not satisfying in case we want only to use only OCR (PDF to Excel Feature)
-            claims_df_offer = pd.DataFrame()
-            benefits_df_offer = pd.DataFrame()
-            providers_df_offer = pd.DataFrame()
-            missing_metadata_offer = {}
-            if active_list.shape[0] > 0: 
-                # Generate different claim experience dataframe versions for conversion to excel in case of pricing offer 
-                if self.pricing_offer:
-                    claims_df_offer, benefits_df_offer, providers_df_offer = validation_extractor_instance.clean_class(claims_df.copy(),benefits_df.copy(),providers_df.copy())
-                    missing_metadata_offer = {}#validation_extractor_instance.return_missing_metadata_dict(claims_df_offer)
-                claims_df, benefits_df, providers_df, table_of_benefits,missing_metadata = validation_extractor_instance.process(claims_df, benefits_df, providers_df,table_of_benefits)
-                # claims_df, benefits_df, providers_df, missing_classes = transform_dataframe_class(claims_df, benefits_df, providers_df, active_list)
-                claims_df, benefits_df, providers_df, missing_classes = ""#transform_dataframe_class(claims_df, benefits_df, providers_df, active_list)
-            else:
-                claims_df, benefits_df, providers_df = validation_extractor_instance.clean_class(claims_df, benefits_df, providers_df)
-                # Empty dictionary means we won't trigger missing information for underwriter 
-                missing_metadata = {}#validation_extractor_instance.return_missing_metadata_dict(claims_df)
-                missing_classes = {}
-
-            general_missing_classes[company] = missing_classes
-            
             self.data_per_company[company].update({
                 'claims': claims_df,
                 'benefits': benefits_df,
                 'providers': providers_df,
-                'claims_offer':claims_df_offer,
-                'benefits_offer':benefits_df_offer,
-                'providers_offer':providers_df_offer,
                 'table_of_benefits':table_of_benefits,
-                'metadata': missing_metadata,
-                'metadata_offer':missing_metadata_offer,
                 'classes': list(claims_df['class'].unique())
             })
         
@@ -257,7 +215,7 @@ class MultiThreading:
 
         logging.info("aggregate_processes_data method Finished")
 
-        return final_data, general_missing_classes
+        return final_data
     
     def upload_files_temp_s3(self) -> None:
         """Uploading files to temporary S3 storage"""
@@ -335,4 +293,3 @@ class MultiThreading:
             logging.info("Done remove_s3_temp_files")
         else:
             logging.info("No objects found in the specified path.")
-        

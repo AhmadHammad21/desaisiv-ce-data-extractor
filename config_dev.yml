@@ -1,1 +1,2 @@
 env: dev
+sqs_url: "https://sqs.us-east-1.amazonaws.com/983376079397/ce-data-extractor-dev.fifo"

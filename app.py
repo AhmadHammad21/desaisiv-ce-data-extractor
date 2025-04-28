@@ -17,7 +17,7 @@ from src.files_validation import (
     is_valid_report, is_active_list, is_raw_data,
     active_list_extraction, raw_data_extraction
 )
-from src.apis_sqs import (
+from src.sqs_apis import (
     sqs_update_status, get_insurance_companies_names, fetch_bucket_user_id_report_id,
     files_testing_update_status, redis_update_status
 )

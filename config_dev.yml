@@ -1,2 +1,10 @@
 env: dev
+download_dir: "/tmp"
+temp_file_s3_bucket: "broker-claim-exp-single-file-temp-dev"
+files_testing: ["claim-templates", "quotation-templates"]
+analysis_s3_bucket: "broker-claim-exp-analysis-dev"
+
+api_url: "https://devapi.desaisiv.com/api"
+
 sqs_url: "https://sqs.us-east-1.amazonaws.com/983376079397/ce-data-extractor-dev.fifo"
+update_files_data_sqs_url: "https://sqs.us-east-1.amazonaws.com/983376079397/UpdateFileData-Dev"

@@ -20,9 +20,9 @@ RUN mv credentials ~/.aws/credentials
 # Install Dependencies
 RUN pip install -r requirements.txt
 
-# RUN export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain broker-ce --domain-owner 983376079397  --query authorizationToken --region us-east-1 --output text) && pip config set global.extra-index-url https://aws:$CODEARTIFACT_AUTH_TOKEN@broker-ce-983376079397.d.codeartifact.us-east-1.amazonaws.com/pypi/brokercecore/simple/
+RUN export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain broker-ce --domain-owner 983376079397  --query authorizationToken --region us-east-1 --output text) && pip config set global.extra-index-url https://aws:$CODEARTIFACT_AUTH_TOKEN@broker-ce-983376079397.d.codeartifact.us-east-1.amazonaws.com/pypi/brokercecore/simple/
 
-# RUN pip install brokercecore==5.19
+RUN pip install brokercecore==5.36
 
 # Set Environment Variables
 ARG APP_ENV=dev
